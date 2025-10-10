@@ -695,11 +695,21 @@ class MoveAnalysisDisplay:
 
         analysis = self.current_analysis
         
-        # Window dimensions and position
-        window_width = 400
-        window_height = 300
-        window_x = (screen.get_width() - window_width) // 2
-        window_y = (screen.get_height() - window_height) // 2
+        # Get board layout to position window to the right
+        board_rect, hud_rect, cell = self.game.layout()
+        
+        # Window dimensions and position (to the right of the board)
+        window_width = 350
+        window_height = min(400, screen.get_height() - hud_rect.height - 40)
+        
+        # Position to the right of the board with some margin
+        margin = 20
+        window_x = board_rect.right + margin
+        window_y = board_rect.top
+        
+        # If there's not enough space on the right, position on the left
+        if window_x + window_width > screen.get_width() - margin:
+            window_x = max(margin, board_rect.left - window_width - margin)
         
         # Draw window background
         window_rect = pg.Rect(window_x, window_y, window_width, window_height)
@@ -780,12 +790,22 @@ class MoveAnalysisDisplay:
         if not self.active:
             return False
             
-        # Check close button
+        # Use same positioning logic as draw method
         screen = pg.display.get_surface()
-        window_width = 400
-        window_height = 300
-        window_x = (screen.get_width() - window_width) // 2
-        window_y = (screen.get_height() - window_height) // 2
+        board_rect, hud_rect, cell = self.game.layout()
+        
+        # Window dimensions and position (to the right of the board)
+        window_width = 350
+        window_height = min(400, screen.get_height() - hud_rect.height - 40)
+        
+        # Position to the right of the board with some margin
+        margin = 20
+        window_x = board_rect.right + margin
+        window_y = board_rect.top
+        
+        # If there's not enough space on the right, position on the left
+        if window_x + window_width > screen.get_width() - margin:
+            window_x = max(margin, board_rect.left - window_width - margin)
         
         close_rect = pg.Rect(window_x + window_width - 25, window_y + 5, 20, 20)
         if close_rect.collidepoint(pos):
