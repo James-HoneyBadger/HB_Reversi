@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import unittest
 import json
 import tempfile
-from Reversi import Settings, Board
+from src.Reversi import Settings, Board
 
 
 class TestSettingsSaveLoad(unittest.TestCase):

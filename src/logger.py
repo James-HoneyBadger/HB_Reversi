@@ -9,7 +9,7 @@ import os
 import sys
 from typing import Optional
 
-from config import file_config, log_config
+from src.config import file_config, log_config
 
 
 class GameLogger:

@@ -56,10 +56,10 @@ cd reversi-deluxe
 pip install pygame
 
 # Run the game with default settings
-python3 Reversi.py
+python3 main.py
 
 # Or with custom options
-python3 Reversi.py --size 10 --difficulty 5 --theme midnight
+python3 main.py --size 10 --difficulty 5 --theme midnight
 ```
 
 ### Alternative Installation
@@ -68,7 +68,7 @@ python3 Reversi.py --size 10 --difficulty 5 --theme midnight
 pip install -r requirements.txt
 
 # Run the game
-python3 Reversi.py
+python3 main.py
 ```
 
 ## How to Play
@@ -77,31 +77,31 @@ python3 Reversi.py
 
 ```bash
 # View all options
-python3 Reversi.py --help
+python3 main.py --help
 
 # Start with custom board size
-python3 Reversi.py --size 10
+python3 main.py --size 10
 
 # Set AI difficulty (1=Beginner, 6=Master)
-python3 Reversi.py --difficulty 5
+python3 main.py --difficulty 5
 
 # Choose a theme
-python3 Reversi.py --theme midnight
+python3 main.py --theme midnight
 
 # Disable sound effects
-python3 Reversi.py --no-sound
+python3 main.py --no-sound
 
 # Load a saved game
-python3 Reversi.py --load mygame.rsv
+python3 main.py --load mygame.rsv
 
 # AI vs AI mode
-python3 Reversi.py --ai-black --ai-white
+python3 main.py --ai-black --ai-white
 
 # Enable debug logging
-python3 Reversi.py --debug
+python3 main.py --debug
 
 # Combine multiple options
-python3 Reversi.py -s 10 -d 5 -t ocean --no-sound
+python3 main.py -s 10 -d 5 -t ocean --no-sound
 ```
 
 Available options:
@@ -208,7 +208,7 @@ Test coverage includes:
 Enable debug logging to troubleshoot issues:
 
 ```bash
-python3 Reversi.py --debug
+python3 main.py --debug
 ```
 
 Logs are written to `reversi.log` with detailed information about:

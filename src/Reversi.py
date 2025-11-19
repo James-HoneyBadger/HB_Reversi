@@ -532,8 +532,8 @@ class AI:
 
 
 # ----------------------------- Settings & SFX ------------------------------ #
-SETTINGS_FILE = "reversi-settings.json"
-ICON_PNG = "reversi-icon.png"
+SETTINGS_FILE = "assets/reversi-settings.json"
+ICON_PNG = "assets/reversi-icon.png"
 
 
 @dataclass
@@ -1695,7 +1695,7 @@ class MenuSystem:
 
     def handle_keyboard(self, key):
         """Handle keyboard navigation in menus"""
-        from logger import get_logger
+        from src.logger import get_logger
 
         logger = get_logger(__name__)
 
@@ -1787,7 +1787,7 @@ class MenuSystem:
                     self.active_submenu_items = None
                     self.setup_menus()  # Refresh menu state
                 except (AttributeError, TypeError) as e:
-                    from logger import get_logger
+                    from src.logger import get_logger
 
                     logger = get_logger(__name__)
                     logger.error(f"Menu handler error: {e}")
@@ -2923,10 +2923,10 @@ class GameExporter:
         timestamp = time.strftime("%Y%m%d_%H%M%S")
 
         if format_type == "pgn":
-            filename = f"reversi_game_{timestamp}.pgn"
+            filename = f"assets/reversi_game_{timestamp}.pgn"
             content = GameExporter.export_to_pgn(game)
         else:  # json
-            filename = f"reversi_game_{timestamp}.json"
+            filename = f"assets/reversi_game_{timestamp}.json"
             content = GameExporter.export_to_json(game)
 
         try:
@@ -4953,7 +4953,7 @@ def main(argv: List[str] = None):
 
     # Setup logging if available
     try:
-        from logger import GameLogger
+        from src.logger import GameLogger
 
         GameLogger.setup_logging(debug=args.debug)
         logger = GameLogger.get_logger(__name__)

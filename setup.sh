@@ -51,16 +51,16 @@ else
 fi
 
 # Make the main script executable
-chmod +x Reversi.py
+chmod +x main.py
 
 echo ""
 echo "🎉 Setup complete!"
 echo ""
 echo "To play Reversi Deluxe:"
-echo "  python3 Reversi.py"
+echo "  python3 main.py"
 echo ""
 echo "Or make it executable and run directly:"
-echo "  ./Reversi.py"
+echo "  ./main.py"
 echo ""
 echo "Controls:"
 echo "  V - Toggle move analysis"

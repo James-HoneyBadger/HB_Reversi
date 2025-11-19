@@ -9,7 +9,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import unittest
-from Reversi import Board, Move, EMPTY, BLACK, WHITE
+from src.Reversi import Board, Move, EMPTY, BLACK, WHITE
 
 
 class TestBoardInitialization(unittest.TestCase):
