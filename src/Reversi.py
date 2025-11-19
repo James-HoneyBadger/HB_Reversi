@@ -701,7 +701,7 @@ GRAVITY = 180
 # Menu constants
 MENU_ITEM_HEIGHT = 25
 MENU_PADDING = 12
-DROPDOWN_WIDTH = 150
+DROPDOWN_WIDTH = 180
 
 THEMES = {
     "classic": {
@@ -1326,43 +1326,47 @@ class MenuSystem:
         game_items = [
             MenuItem("New Game", self.game.on_new),
             MenuItem(
-                f"Board Size: {self.game.board.size}x{self.game.board.size}",
+                f"Board Size ({self.game.board.size}×{self.game.board.size})",
                 self.game.on_cycle_board_size,
             ),
             MenuItem("Undo Move", self.game.on_undo),
             MenuItem("Redo Move", self.game.on_redo),
             MenuItem("Save Game", self.game.on_save),
             MenuItem("Load Game", self.game.on_load),
-            MenuItem("Export to PGN", self.game.on_export_pgn),
-            MenuItem("Export to JSON", self.game.on_export_json),
+            MenuItem("Export PGN", self.game.on_export_pgn),
+            MenuItem("Export JSON", self.game.on_export_json),
         ]
 
         # AI menu with submenu for difficulty levels
         ai_level_submenu = [
-            MenuItem("Beginner (Level 1)", lambda: self.game.set_ai_depth(1)),
-            MenuItem("Easy (Level 2)", lambda: self.game.set_ai_depth(2)),
-            MenuItem("Medium (Level 3)", lambda: self.game.set_ai_depth(3)),
-            MenuItem("Hard (Level 4)", lambda: self.game.set_ai_depth(4)),
-            MenuItem("Expert (Level 5)", lambda: self.game.set_ai_depth(5)),
-            MenuItem("Master (Level 6)", lambda: self.game.set_ai_depth(6)),
+            MenuItem("Level 1 - Beginner", lambda: self.game.set_ai_depth(1)),
+            MenuItem("Level 2 - Easy", lambda: self.game.set_ai_depth(2)),
+            MenuItem("Level 3 - Medium", lambda: self.game.set_ai_depth(3)),
+            MenuItem("Level 4 - Hard", lambda: self.game.set_ai_depth(4)),
+            MenuItem("Level 5 - Expert", lambda: self.game.set_ai_depth(5)),
+            MenuItem("Level 6 - Master", lambda: self.game.set_ai_depth(6)),
         ]
+
+        black_player = "AI" if self.game.settings.ai_black else "Human"
+        white_player = "AI" if self.game.settings.ai_white else "Human"
+        hints_status = "✓" if self.game.hint_system.show_hints else " "
 
         ai_items = [
             MenuItem(
-                f"Black: {'Computer' if self.game.settings.ai_black else 'Human'}",
+                f"Black Player: {black_player}",
                 self.game.on_toggle_ai_black,
             ),
             MenuItem(
-                f"White: {'Computer' if self.game.settings.ai_white else 'Human'}",
+                f"White Player: {white_player}",
                 self.game.on_toggle_ai_white,
             ),
             MenuItem(
-                f"Computer Level: {self.game.settings.ai_depth}",
+                f"AI Difficulty (Level {self.game.settings.ai_depth})",
                 None,
                 submenu=ai_level_submenu,
             ),
             MenuItem(
-                f"Show Hints: {'On' if self.game.hint_system.show_hints else 'Off'}",
+                f"[{hints_status}] Show Hints",
                 self.game.on_toggle_move_hints,
             ),
         ]
@@ -1400,10 +1404,10 @@ class MenuSystem:
         ]
 
         font_size_submenu = [
-            MenuItem("Small (0.8x)", lambda: self.game.set_font_size(0.8)),
-            MenuItem("Normal (1.0x)", lambda: self.game.set_font_size(1.0)),
-            MenuItem("Large (1.2x)", lambda: self.game.set_font_size(1.2)),
-            MenuItem("X-Large (1.5x)", lambda: self.game.set_font_size(1.5)),
+            MenuItem("Small", lambda: self.game.set_font_size(0.8)),
+            MenuItem("Normal", lambda: self.game.set_font_size(1.0)),
+            MenuItem("Large", lambda: self.game.set_font_size(1.2)),
+            MenuItem("Extra Large", lambda: self.game.set_font_size(1.5)),
         ]
 
         piece_style_submenu = [
@@ -1412,14 +1416,21 @@ class MenuSystem:
             MenuItem("Emoji", lambda: self.game.set_piece_style("emoji")),
         ]
 
+        # Format current theme name nicely
+        current_theme = THEMES[self.game.settings.theme]["display"]
+        font_pct = int(self.game.settings.font_size_multiplier * 100)
+        grid_status = "✓" if self.game.settings.show_grid else " "
+        preview_status = "✓" if self.game.settings.show_move_preview else " "
+        sound_status = "✓" if self.game.settings.sound else " "
+
         view_items = [
             MenuItem(
-                f"Theme: {THEMES[self.game.settings.theme]['display']}",
+                f"Theme: {current_theme}",
                 None,
                 submenu=theme_submenu,
             ),
             MenuItem(
-                f"Font Size: {int(self.game.settings.font_size_multiplier * 100)}%",
+                f"Font Size ({font_pct}%)",
                 None,
                 submenu=font_size_submenu,
             ),
@@ -1429,15 +1440,15 @@ class MenuSystem:
                 submenu=piece_style_submenu,
             ),
             MenuItem(
-                f"Grid: {'On' if self.game.settings.show_grid else 'Off'}",
+                f"[{grid_status}] Show Grid",
                 self.game.on_toggle_grid,
             ),
             MenuItem(
-                f"Move Preview: {'On' if self.game.settings.show_move_preview else 'Off'}",
+                f"[{preview_status}] Move Preview",
                 self.game.on_toggle_move_preview,
             ),
             MenuItem(
-                f"Sound: {'On' if self.game.settings.sound else 'Off'}",
+                f"[{sound_status}] Sound Effects",
                 self.game.on_toggle_sound,
             ),
         ]
@@ -1456,7 +1467,7 @@ class MenuSystem:
                 self.game.on_toggle_replay,
                 enabled=len(self.game.ui.move_history) > 0,
             ),
-            MenuItem("Per-Difficulty Stats", self.game.on_show_difficulty_stats),
+            MenuItem("Difficulty Statistics", self.game.on_show_difficulty_stats),
             MenuItem("About Reversi Deluxe", self.game.on_show_about),
         ]
 
