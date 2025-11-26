@@ -28,8 +28,8 @@ This document summarizes the reorganization of the Iago_Deluxe project structure
 ### Code Updates
 1. **`src/Reversi.py`**
    - Updated `SETTINGS_FILE` path: `assets/reversi-settings.json` → `config/reversi-settings.json`
-   - Updated save paths: `assets/reversi_game_*.pgn` → `data/reversi_game_*.pgn`
-   - Updated save paths: `assets/reversi_game_*.json` → `data/reversi_game_*.json`
+   - Updated save paths: `assets/iago_game_*.pgn` → `data/iago_game_*.pgn`
+   - Updated save paths: `assets/iago_game_*.json` → `data/iago_game_*.json`
 
 2. **`.gitignore`**
    - Updated paths to reflect new structure

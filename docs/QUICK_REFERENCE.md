@@ -1,4 +1,4 @@
-# Reversi Deluxe - Quick Reference
+# Iago Deluxe - Quick Reference
 
 ## 📁 File Locations
 
@@ -11,13 +11,13 @@ config/
 ### Game Data
 ```
 data/
-├── reversi_game_*.pgn       # Saved games (PGN format)
-└── reversi_game_*.json      # Saved games (JSON format)
+├── iago_game_*.pgn       # Saved games (PGN format)
+└── iago_game_*.json      # Saved games (JSON format)
 ```
 
 ### Logs
 ```
-reversi.log                  # Game logs (auto-rotated at 10MB)
+iago.log                  # Game logs (auto-rotated at 10MB)
 ```
 
 ## 🚀 Quick Start Commands
@@ -204,7 +204,7 @@ Access via: Press `G` after game ends
 ### Manual Game Save
 ```bash
 # In-game: Press S or Game → Save Game
-# Creates: data/reversi_game_YYYYMMDD_HHMMSS.pgn
+# Creates: data/iago_game_YYYYMMDD_HHMMSS.pgn
 
 # Load saved game: Game → Load Game
 # Select from data/ directory
@@ -319,7 +319,7 @@ Iago_Deluxe/
 ├── .flake8                     # Linting config
 │
 ├── src/                        # Source code
-│   ├── Reversi.py             # Main game (5100+ lines)
+│   ├── Iago.py             # Main game (5100+ lines)
 │   ├── config.py              # Configuration
 │   ├── logger.py              # Logging system
 │   └── error_handling.py      # Error handling

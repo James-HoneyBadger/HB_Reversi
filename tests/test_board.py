@@ -10,7 +10,7 @@ import unittest
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.Reversi import Board, EMPTY, BLACK, WHITE  # noqa: E402, F401
+from src.Iago import Board, EMPTY, BLACK, WHITE  # noqa: E402, F401
 
 
 class TestBoardInitialization(unittest.TestCase):

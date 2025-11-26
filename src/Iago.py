@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Reversi / Othello - Deluxe Pygame Edition
+Iago / Othello - Deluxe Pygame Edition
 
-A polished, feature-rich implementation of the classic Reversi/Othello board game.
+A polished, feature-rich implementation of the classic Iago/Othello board game.
 
 Features:
 - Clean, modern UI with organized button layout
@@ -532,7 +532,7 @@ class AI:
 
 
 # ----------------------------- Settings & SFX ------------------------------ #
-SETTINGS_FILE = "config/reversi-settings.json"
+SETTINGS_FILE = "config/iago-settings.json"
 ICON_PNG = "assets/reversi-icon.png"
 
 
@@ -1497,7 +1497,7 @@ class MenuSystem:
                 enabled=len(self.game.ui.move_history) > 0,
             ),
             MenuItem("Difficulty Statistics", self.game.on_show_difficulty_stats),
-            MenuItem("About Reversi Deluxe", self.game.on_show_about),
+            MenuItem("About Iago Deluxe", self.game.on_show_about),
         ]
 
         self.menus = [
@@ -2873,7 +2873,7 @@ class GameExporter:
         pgn_lines = []
 
         # Header
-        pgn_lines.append('[Event "Reversi Deluxe Game"]')
+        pgn_lines.append('[Event "Iago Deluxe Game"]')
         pgn_lines.append(f'[Date "{time.strftime("%Y.%m.%d")}"]')
         pgn_lines.append('[Round "-"]')
 
@@ -2958,10 +2958,10 @@ class GameExporter:
         timestamp = time.strftime("%Y%m%d_%H%M%S")
 
         if format_type == "pgn":
-            filename = f"data/reversi_game_{timestamp}.pgn"
+            filename = f"data/iago_game_{timestamp}.pgn"
             content = GameExporter.export_to_pgn(game)
         else:  # json
-            filename = f"data/reversi_game_{timestamp}.json"
+            filename = f"data/iago_game_{timestamp}.json"
             content = GameExporter.export_to_json(game)
 
         try:
@@ -2977,7 +2977,7 @@ class GameExporter:
 class Game:
     def __init__(self, board: Board, settings: Settings):
         pg.init()
-        pg.display.set_caption("Reversi Deluxe")
+        pg.display.set_caption("Iago Deluxe")
         self.screen = pg.display.set_mode((W, H), pg.RESIZABLE)
         self.clock = pg.time.Clock()
         self.font = pg.font.SysFont("Arial", 18)
@@ -4451,10 +4451,10 @@ class Game:
     def on_show_about(self):
         """Show the About dialog with game information"""
         about_text = [
-            "Reversi Deluxe v2.0",
+            "Iago Deluxe v2.0",
             "",
             "A polished, feature-rich implementation of",
-            "the classic Reversi/Othello board game.",
+            "the classic Iago/Othello board game.",
             "",
             "Features:",
             "• Advanced AI with 6 difficulty levels",
@@ -4727,12 +4727,12 @@ class Game:
 
             desktop = f"""[Desktop Entry]
 Type=Application
-Name=Reversi Deluxe
+Name=Iago Deluxe
 Exec=python3 {exec_path}
 Icon={icon_path}
 Terminal=false
 Categories=Game;BoardGame;
-Comment=Classic Reversi/Othello board game with AI
+Comment=Classic Iago/Othello board game with AI
 """
             with open(path, "w", encoding="utf-8") as f:
                 f.write(desktop)
@@ -4931,7 +4931,7 @@ def main(argv: List[str] = None):
 
         GameLogger.setup_logging(debug=False)
         logger = GameLogger.get_logger(__name__)
-        logger.info("Starting Reversi Deluxe v2.0")
+        logger.info("Starting Iago Deluxe v2.0")
     except ImportError:
         logger = None
 

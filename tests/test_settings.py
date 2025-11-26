@@ -12,7 +12,7 @@ import tempfile
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.Reversi import Settings, Board  # noqa: E402
+from src.Iago import Settings, Board  # noqa: E402
 
 
 class TestSettingsSaveLoad(unittest.TestCase):
@@ -39,7 +39,7 @@ class TestSettingsSaveLoad(unittest.TestCase):
         self.assertEqual(settings.theme, "classic")
         self.assertTrue(settings.sound)
         self.assertFalse(settings.ai_black)
-        self.assertFalse(settings.ai_white)
+        self.assertTrue(settings.ai_white)
 
     def test_save_settings(self):
         """Test saving settings to file"""
@@ -168,7 +168,7 @@ class TestFileErrorHandling(unittest.TestCase):
     def test_load_nonexistent_file(self):
         """Test loading file that doesn't exist"""
         # Attempt to load nonexistent file
-        nonexistent = "/tmp/nonexistent_reversi_save_12345.json"
+        nonexistent = "/tmp/nonexistent_iago_save_12345.json"
 
         # Should not crash
         try:

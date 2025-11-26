@@ -1,6 +1,6 @@
 # Iago_Deluxe Documentation
 
-Welcome to the comprehensive documentation for Iago_Deluxe, a feature-rich implementation of the classic Reversi (Othello) board game.
+Welcome to the comprehensive documentation for Iago_Deluxe, a feature-rich implementation of the classic Iago (Othello) board game.
 
 ## 📚 Documentation Index
 
@@ -49,7 +49,7 @@ Iago_Deluxe/
 ├── CONTRIBUTING.md              # How to contribute
 │
 ├── src/                         # Source code
-│   ├── Reversi.py              # Main game (5100+ lines)
+│   ├── Iago.py              # Main game (5100+ lines)
 │   ├── config.py               # Configuration
 │   ├── logger.py               # Logging system
 │   └── error_handling.py       # Error handling
@@ -77,7 +77,7 @@ Iago_Deluxe/
 ## 🎮 Features Overview
 
 ### Gameplay
-- **Classic Reversi** - Full implementation of Reversi/Othello rules
+- **Classic Iago** - Full implementation of Iago/Othello rules
 - **6 AI Levels** - From beginner (Level 1) to expert (Level 6)
 - **Multiple Board Sizes** - 4×4 to 16×16 (default 8×8)
 - **Undo/Redo** - Full move history with unlimited undo
@@ -185,7 +185,7 @@ We welcome contributions! Please see:
 
 ### v1.0.0
 **Initial Feature-Complete Release**
-- Complete Reversi gameplay
+- Complete Iago gameplay
 - AI opponent with 6 difficulty levels
 - Post-game analysis
 - Multiple themes
@@ -194,9 +194,9 @@ We welcome contributions! Please see:
 
 ## 🔗 External Resources
 
-### Reversi Strategy
+### Iago Strategy
 - [World Othello Federation](https://www.worldothello.org/)
-- [Reversi Strategy Guide](https://www.worldothello.org/strategy)
+- [Iago Strategy Guide](https://www.worldothello.org/strategy)
 
 ### Technical References
 - [Minimax Algorithm](https://en.wikipedia.org/wiki/Minimax)
@@ -204,7 +204,7 @@ We welcome contributions! Please see:
 - [Pygame Documentation](https://www.pygame.org/docs/)
 
 ### Similar Projects
-- [Edax](https://github.com/abulmo/edax-reversi) - Strong Reversi engine
+- [Edax](https://github.com/abulmo/edax-reversi) - Strong Iago engine
 - [Logistello](http://www.radagast.se/othello/log.html) - Historic Othello program
 
 ## 📧 Support

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test runner for Reversi Deluxe
+Test runner for Iago Deluxe
 Runs all unit tests and generates coverage report
 """
 import sys
@@ -66,7 +66,7 @@ def run_specific_test(test_module, verbosity=2):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Run Reversi Deluxe tests")
+    parser = argparse.ArgumentParser(description="Run Iago Deluxe tests")
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
     parser.add_argument("-q", "--quiet", action="store_true", help="Quiet output")
     parser.add_argument(

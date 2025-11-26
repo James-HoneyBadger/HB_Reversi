@@ -1,4 +1,4 @@
-# Reversi Deluxe - Development Guide
+# Iago Deluxe - Development Guide
 
 ## Table of Contents
 
@@ -25,7 +25,7 @@
 
 ### v1.0.0
 **Initial Feature-Complete Release**
-- Complete Reversi gameplay implementation
+- Complete Iago gameplay implementation
 - AI opponent with 6 difficulty levels
 - Post-game analysis system
 - Move-by-move analysis window
@@ -60,7 +60,7 @@ Iago_Deluxe follows a **component-based architecture** with clear separation of 
 Iago_Deluxe/
 ├── src/                        # Source code package
 │   ├── __init__.py            # Package initialization
-│   ├── Reversi.py             # Main game implementation (5100+ lines)
+│   ├── Iago.py             # Main game implementation (5100+ lines)
 │   ├── config.py              # Configuration constants and dataclasses
 │   ├── logger.py              # Logging system with file rotation
 │   └── error_handling.py      # Custom exceptions and validators
@@ -111,7 +111,7 @@ Iago_Deluxe/
 ## Core Components
 
 ### 1. Board Class
-**Location:** `src/Reversi.py`
+**Location:** `src/Iago.py`
 
 **Responsibilities:**
 - Game state management (8x8 to 16x16 grids)
@@ -138,7 +138,7 @@ def check_game_over() -> tuple[bool, int | None]
 - Immutable move history for undo/redo
 
 ### 2. AI Class
-**Location:** `src/Reversi.py`
+**Location:** `src/Iago.py`
 
 **Responsibilities:**
 - Intelligent move selection
@@ -177,7 +177,7 @@ def evaluate(board: Board) -> float
 ```
 
 ### 3. Game Class
-**Location:** `src/Reversi.py`
+**Location:** `src/Iago.py`
 
 **Responsibilities:**
 - Main game loop and event handling
@@ -210,7 +210,7 @@ def render() -> None
 ### 4. UI Components
 
 #### MenuSystem
-**Location:** `src/Reversi.py`
+**Location:** `src/Iago.py`
 
 **Features:**
 - Dynamic menu generation
@@ -243,7 +243,7 @@ View
 ```
 
 #### GameAnalysisDisplay
-**Location:** `src/Reversi.py`
+**Location:** `src/Iago.py`
 
 **Features:**
 - Post-game statistics
@@ -260,7 +260,7 @@ View
 - Move quality distribution
 
 #### MoveAnalysisDisplay
-**Location:** `src/Reversi.py`
+**Location:** `src/Iago.py`
 
 **Features:**
 - Real-time move analysis window
@@ -347,19 +347,19 @@ with ErrorContext("Operation description"):
 
 **Custom Exceptions:**
 ```python
-class ReversiError(Exception)
-    """Base exception for all Reversi errors."""
+class IagoError(Exception)
+    """Base exception for all Iago errors."""
 
-class InvalidMoveError(ReversiError)
+class InvalidMoveError(IagoError)
     """Raised for illegal moves."""
 
-class InvalidBoardStateError(ReversiError)
+class InvalidBoardStateError(IagoError)
     """Raised for corrupted board state."""
 
-class SaveFileError(ReversiError)
+class SaveFileError(IagoError)
     """Raised for save/load failures."""
 
-class ConfigurationError(ReversiError)
+class ConfigurationError(IagoError)
     """Raised for invalid configuration."""
 ```
 
@@ -589,7 +589,7 @@ Current coverage (as of v2.0.0):
 Example test structure:
 ```python
 import pytest
-from src.Reversi import Board, AI
+from src.Iago import Board, AI
 
 class TestBoard:
     """Board logic tests."""
@@ -715,7 +715,7 @@ This logs:
 
 ### Logging
 
-**Log files location:** `reversi.log`
+**Log files location:** `iago.log`
 
 **Log levels:**
 - `DEBUG` - Detailed diagnostic information
@@ -725,10 +725,10 @@ This logs:
 
 **Example log output:**
 ```
-2025-11-19 10:30:15,123 - src.Reversi - INFO - Game started
-2025-11-19 10:30:15,124 - src.Reversi - DEBUG - Board size: 8x8
-2025-11-19 10:30:20,456 - src.Reversi - INFO - AI move: (2, 3)
-2025-11-19 10:30:20,457 - src.Reversi - DEBUG - Search depth: 4, time: 0.33s
+2025-11-19 10:30:15,123 - src.Iago - INFO - Game started
+2025-11-19 10:30:15,124 - src.Iago - DEBUG - Board size: 8x8
+2025-11-19 10:30:20,456 - src.Iago - INFO - AI move: (2, 3)
+2025-11-19 10:30:20,457 - src.Iago - DEBUG - Search depth: 4, time: 0.33s
 ```
 
 ## Future Enhancements
@@ -767,7 +767,7 @@ This logs:
 ### Technical Improvements Needed
 
 **Code Structure:**
-- Split `Reversi.py` into multiple modules
+- Split `Iago.py` into multiple modules
 - Separate UI from game logic
 - Create dedicated AI package
 - Improve type annotations
@@ -816,8 +816,8 @@ For contribution guidelines, see [CONTRIBUTING.md](../CONTRIBUTING.md)
 
 ## Resources
 
-### Reversi Strategy
-- [Reversi Strategy Guide](https://www.worldothello.org/strategy)
+### Iago Strategy
+- [Iago Strategy Guide](https://www.worldothello.org/strategy)
 - [Othello Opening Theory](https://www.radagast.se/othello/howto.html)
 
 ### Technical References
@@ -826,7 +826,7 @@ For contribution guidelines, see [CONTRIBUTING.md](../CONTRIBUTING.md)
 - [Pygame Documentation](https://www.pygame.org/docs/)
 
 ### Similar Projects
-- [Edax](https://github.com/abulmo/edax-reversi) - Strong Reversi engine
+- [Edax](https://github.com/abulmo/edax-reversi) - Strong Iago engine
 - [NTest](https://github.com/ntest/ntest) - Othello test suite
 
 ---

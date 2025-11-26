@@ -75,7 +75,7 @@ class FileConfig:
 
     SETTINGS_FILE: str = "reversi-settings.json"
     ICON_PNG: str = "reversi-icon.png"
-    LOG_FILE: str = "reversi.log"
+    LOG_FILE: str = "iago.log"
     SAVE_GAME_EXTENSION: str = ".rsv"
 
 

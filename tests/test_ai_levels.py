@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, "/home/james/Iago_Deluxe")
 
-from src.Reversi import AI, Board, BLACK, WHITE
+from src.Iago import AI, Board, BLACK, WHITE
 
 
 def test_ai_levels():

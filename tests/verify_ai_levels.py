@@ -7,7 +7,7 @@ import sys
 
 sys.path.insert(0, "/home/james/Iago_Deluxe")
 
-from src.Reversi import AI, Board, BLACK, WHITE
+from src.Iago import AI, Board, BLACK, WHITE
 import time
 
 
@@ -41,7 +41,7 @@ def test_level_performance(level, num_tests=3):
 
 def main():
     print("=" * 70)
-    print("REVERSI AI DIFFICULTY LEVEL VERIFICATION")
+    print("IAGO AI DIFFICULTY LEVEL VERIFICATION")
     print("=" * 70)
     print()
 

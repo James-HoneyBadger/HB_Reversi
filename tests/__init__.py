@@ -1,3 +1,3 @@
 """
-Test package for Reversi Deluxe
+Test package for Iago Deluxe
 """

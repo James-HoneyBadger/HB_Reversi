@@ -3,7 +3,7 @@
 **Version:** 2.0.0  
 **Last Updated:** November 19, 2025
 
-Welcome to Iago_Deluxe! This comprehensive guide will help you get the most out of your Reversi/Othello gaming experience.
+Welcome to Iago_Deluxe! This comprehensive guide will help you get the most out of your Iago/Othello gaming experience.
 
 ## 📋 Table of Contents
 
@@ -70,7 +70,7 @@ pip install -r requirements.txt
 
 ## Game Rules
 
-### Reversi/Othello Basics
+### Iago/Othello Basics
 
 **Objective:** Have more pieces of your color on the board when the game ends.
 
@@ -604,7 +604,7 @@ python3 --version  # Should be 3.7+
 
 3. **Use recent autosave:**
    - Check for latest file
-   - `data/reversi_game_YYYYMMDD_HHMMSS.pgn`
+   - `data/iago_game_YYYYMMDD_HHMMSS.pgn`
 
 4. **Start new game:**
    - File may be genuinely corrupted
@@ -644,7 +644,7 @@ python3 --version  # Should be 3.7+
 ### General Questions
 
 **Q: Is this the same as Othello?**  
-A: Yes! Reversi and Othello are the same game. Othello is the trademarked name. We use "Reversi" as the generic term.
+A: Yes! Iago and Othello are the same game. Othello is the trademarked name. We use "Iago" as the generic term.
 
 **Q: Can I play online against other people?**  
 A: Not yet. Network multiplayer is planned for v2.1 (Q1 2026). Currently, you can:
@@ -747,8 +747,8 @@ A: Debug logging is for developers only and not available in the GUI.
 A: `data/` directory in installation folder:
 ```
 data/
-├── reversi_game_20251119_143000.pgn
-└── reversi_game_20251119_150000.json
+├── iago_game_20251119_143000.pgn
+└── iago_game_20251119_150000.json
 ```
 
 **Q: Can I analyze my games?**  
@@ -801,7 +801,7 @@ A: Practice methods:
 
 ### External Resources
 - [World Othello Federation](https://www.worldothello.org/)
-- [Reversi Strategy Guide](https://www.worldothello.org/strategy)
+- [Iago Strategy Guide](https://www.worldothello.org/strategy)
 - [Opening Book Database](http://www.ffothello.org/livres/beginner-cup-en.pdf)
 
 ### Community

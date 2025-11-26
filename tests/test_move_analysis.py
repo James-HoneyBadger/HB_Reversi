@@ -17,15 +17,15 @@ def test_move_analysis_toggle():
     import importlib.util
 
     spec = importlib.util.spec_from_file_location(
-        "reversi", "/home/james/Reversi/Reversi.py"
+        "iago", "/home/james/Iago_Deluxe/src/Iago.py"
     )
-    reversi_module = importlib.util.module_from_spec(spec)
+    iago_module = importlib.util.module_from_spec(spec)
 
     # Mock the main execution to prevent GUI from starting
-    reversi_module.__name__ = "not_main"
-    spec.loader.exec_module(reversi_module)
+    iago_module.__name__ = "not_main"
+    spec.loader.exec_module(iago_module)
 
-    Game = reversi_module.Game
+    Game = iago_module.Game
     Board = reversi_module.Board
     Settings = reversi_module.Settings
 
