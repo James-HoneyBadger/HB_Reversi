@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iago Deluxe - Web Edition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        #gameCanvas {
+            border: 2px solid #333;
+            background: #0a5f0a;
+            display: block;
+            margin: 20px auto;
+        }
+        #controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #status {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        #info {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Iago Deluxe - Web Edition</h1>
+    <p>A simplified Reversi/Othello game that runs in your web browser!</p>
+
+    <div id="info">
+        <h3>How to Play:</h3>
+        <ul>
+            <li>Click on a highlighted square to place your piece</li>
+            <li>Black plays first, then White</li>
+            <li>Capture opponent pieces by sandwiching them</li>
+            <li>Game ends when no moves are possible</li>
+            <li>Player with most pieces wins!</li>
+        </ul>
+    </div>
+
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <div id="controls">
+        <select id="gameModeSelect">
+            <option value="human-human">Human vs Human</option>
+            <option value="human-computer">Human vs Computer</option>
+            <option value="computer-computer">Computer vs Computer</option>
+        </select>
+        <select id="difficultySelect">
+            <option value="1">Easy</option>
+            <option value="2">Medium</option>
+            <option value="3">Hard</option>
+        </select>
+        <button id="newGameBtn">New Game</button>
+        <button id="hintBtn">Show Hints</button>
+        <button id="passBtn">Pass Turn</button>
+    </div>
+
+    <div id="status">Click "New Game" to start!</div>
+
+    <script>
+        class WebReversi {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.boardSize = 8;
+                this.cellSize = this.canvas.width / this.boardSize;
+                this.EMPTY = 0;
+                this.BLACK = 1;
+                this.WHITE = 2;
+                this.currentPlayer = this.BLACK;
+                this.gameOver = false;
+
+                // Game mode settings
+                this.gameMode = 'human-human'; // 'human-human', 'human-computer', 'computer-computer'
+                this.difficulty = 2; // 1=easy, 2=medium, 3=hard
+                this.isComputerTurn = false;
+
+                // Initialize board
+                this.resetBoard();
+
+                // Bind events
+                this.canvas.addEventListener('click', (e) => this.handleClick(e));
+
+                // Bind buttons
+                document.getElementById('newGameBtn').addEventListener('click', () => this.newGame());
+                document.getElementById('hintBtn').addEventListener('click', () => this.toggleHints());
+                document.getElementById('passBtn').addEventListener('click', () => this.passTurn());
+                document.getElementById('gameModeSelect').addEventListener('change', (e) => {
+                    this.gameMode = e.target.value;
+                    this.newGame();
+                });
+                document.getElementById('difficultySelect').addEventListener('change', (e) => {
+                    this.difficulty = parseInt(e.target.value);
+                });
+
+                this.showHints = false;
+                this.updateDisplay();
+            }
+
+            resetBoard() {
+                this.board = Array(this.boardSize).fill().map(() => Array(this.boardSize).fill(this.EMPTY));
+
+                // Initial pieces
+                const center = this.boardSize / 2;
+                this.board[center - 1][center - 1] = this.WHITE;
+                this.board[center - 1][center] = this.BLACK;
+                this.board[center][center - 1] = this.BLACK;
+                this.board[center][center] = this.WHITE;
+            }
+
+            newGame() {
+                this.resetBoard();
+                this.currentPlayer = this.BLACK;
+                this.gameOver = false;
+                this.isComputerTurn = false;
+                this.updateDisplay();
+                // If computer plays first in computer vs computer mode
+                if (this.gameMode === 'computer-computer') {
+                    setTimeout(() => this.makeComputerMove(), 500);
+                }
+            }
+
+            toggleHints() {
+                this.showHints = !this.showHints;
+                document.getElementById('hintBtn').textContent = this.showHints ? 'Hide Hints' : 'Show Hints';
+                this.updateDisplay();
+            }
+
+            passTurn() {
+                if (this.gameOver || this.isComputerTurn) return;
+
+                this.nextTurn();
+            }
+
+            handleClick(event) {
+                if (this.gameOver || this.isComputerTurn) return;
+
+                // Check if current player should be human
+                if (this.gameMode === 'computer-computer' ||
+                    (this.gameMode === 'human-computer' && this.currentPlayer === this.WHITE)) {
+                    return; // Computer's turn
+                }
+
+                const rect = this.canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                const col = Math.floor(x / this.cellSize);
+                const row = Math.floor(y / this.cellSize);
+
+                if (this.isValidMove(row, col, this.currentPlayer)) {
+                    this.makeMove(row, col, this.currentPlayer);
+                    this.nextTurn();
+                }
+            }
+
+            isValidMove(row, col, player) {
+                if (this.board[row][col] !== this.EMPTY) return false;
+
+                const opponent = player === this.BLACK ? this.WHITE : this.BLACK;
+                const directions = [
+                    [-1, -1], [-1, 0], [-1, 1],
+                    [0, -1],           [0, 1],
+                    [1, -1],  [1, 0],  [1, 1]
+                ];
+
+                for (const [dr, dc] of directions) {
+                    let r = row + dr;
+                    let c = col + dc;
+                    let foundOpponent = false;
+
+                    while (r >= 0 && r < this.boardSize && c >= 0 && c < this.boardSize) {
+                        if (this.board[r][c] === opponent) {
+                            foundOpponent = true;
+                        } else if (this.board[r][c] === player) {
+                            if (foundOpponent) return true;
+                            break;
+                        } else {
+                            break;
+                        }
+                        r += dr;
+                        c += dc;
+                    }
+                }
+
+                return false;
+            }
+
+            makeMove(row, col, player) {
+                this.board[row][col] = player;
+
+                const opponent = player === this.BLACK ? this.WHITE : this.BLACK;
+                const directions = [
+                    [-1, -1], [-1, 0], [-1, 1],
+                    [0, -1],           [0, 1],
+                    [1, -1],  [1, 0],  [1, 1]
+                ];
+
+                for (const [dr, dc] of directions) {
+                    let r = row + dr;
+                    let c = col + dc;
+                    const toFlip = [];
+
+                    while (r >= 0 && r < this.boardSize && c >= 0 && c < this.boardSize) {
+                        if (this.board[r][c] === opponent) {
+                            toFlip.push([r, c]);
+                        } else if (this.board[r][c] === player) {
+                            // Flip the pieces
+                            for (const [fr, fc] of toFlip) {
+                                this.board[fr][fc] = player;
+                            }
+                            break;
+                        } else {
+                            break;
+                        }
+                        r += dr;
+                        c += dc;
+                    }
+                }
+            }
+
+            hasValidMoves(player) {
+                for (let row = 0; row < this.boardSize; row++) {
+                    for (let col = 0; col < this.boardSize; col++) {
+                        if (this.isValidMove(row, col, player)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            nextTurn() {
+                this.currentPlayer = this.currentPlayer === this.BLACK ? this.WHITE : this.BLACK;
+
+                // Check if next player can move
+                if (!this.hasValidMoves(this.currentPlayer)) {
+                    this.currentPlayer = this.currentPlayer === this.BLACK ? this.WHITE : this.BLACK;
+                    if (!this.hasValidMoves(this.currentPlayer)) {
+                        this.gameOver = true;
+                    }
+                }
+
+                this.updateDisplay();
+
+                // Handle computer turns
+                if (!this.gameOver && this.shouldComputerMove()) {
+                    setTimeout(() => this.makeComputerMove(), 500); // Delay for better UX
+                }
+            }
+
+            shouldComputerMove() {
+                if (this.gameMode === 'human-human') return false;
+                if (this.gameMode === 'computer-computer') return true;
+                // Human vs Computer: computer plays white
+                return this.currentPlayer === this.WHITE;
+            }
+
+            makeComputerMove() {
+                if (this.gameOver) return;
+
+                this.isComputerTurn = true;
+                this.updateDisplay();
+
+                const bestMove = this.getBestMove(this.currentPlayer);
+                if (bestMove) {
+                    setTimeout(() => {
+                        this.makeMove(bestMove.row, bestMove.col, this.currentPlayer);
+                        this.isComputerTurn = false;
+                        this.nextTurn();
+                    }, 200);
+                } else {
+                    // No moves available, pass
+                    this.isComputerTurn = false;
+                    this.passTurn();
+                }
+            }
+
+            getBestMove(player) {
+                const validMoves = [];
+                for (let row = 0; row < this.boardSize; row++) {
+                    for (let col = 0; col < this.boardSize; col++) {
+                        if (this.isValidMove(row, col, player)) {
+                            validMoves.push({row, col, score: this.evaluateMove(row, col, player)});
+                        }
+                    }
+                }
+
+                if (validMoves.length === 0) return null;
+
+                // Sort by score (higher is better)
+                validMoves.sort((a, b) => b.score - a.score);
+
+                // Add some randomness for easier difficulties
+                const randomFactor = this.difficulty === 1 ? 0.3 : this.difficulty === 2 ? 0.1 : 0;
+                if (Math.random() < randomFactor && validMoves.length > 1) {
+                    // Pick a random move from top 3
+                    const topMoves = validMoves.slice(0, Math.min(3, validMoves.length));
+                    return topMoves[Math.floor(Math.random() * topMoves.length)];
+                }
+
+                return validMoves[0];
+            }
+
+            evaluateMove(row, col, player) {
+                // Simple evaluation based on position and pieces captured
+                let score = 0;
+
+                // Prefer corners
+                if ((row === 0 || row === 7) && (col === 0 || col === 7)) {
+                    score += 100;
+                }
+                // Avoid edges next to corners
+                else if ((row === 0 || row === 7 || col === 0 || col === 7)) {
+                    score += 10;
+                }
+
+                // Count pieces that would be captured
+                const tempBoard = this.board.map(r => [...r]);
+                this.makeMoveOnBoard(tempBoard, row, col, player);
+                const newCount = [].concat(...tempBoard).filter(cell => cell === player).length;
+                const oldCount = [].concat(...this.board).filter(cell => cell === player).length;
+                score += (newCount - oldCount) * 2;
+
+                return score;
+            }
+
+            makeMoveOnBoard(board, row, col, player) {
+                board[row][col] = player;
+
+                const opponent = player === this.BLACK ? this.WHITE : this.BLACK;
+                const directions = [
+                    [-1, -1], [-1, 0], [-1, 1],
+                    [0, -1],           [0, 1],
+                    [1, -1],  [1, 0],  [1, 1]
+                ];
+
+                for (const [dr, dc] of directions) {
+                    let r = row + dr;
+                    let c = col + dc;
+                    const toFlip = [];
+
+                    while (r >= 0 && r < this.boardSize && c >= 0 && c < this.boardSize) {
+                        if (board[r][c] === opponent) {
+                            toFlip.push([r, c]);
+                        } else if (board[r][c] === player) {
+                            // Flip the pieces
+                            for (const [fr, fc] of toFlip) {
+                                board[fr][fc] = player;
+                            }
+                            break;
+                        } else {
+                            break;
+                        }
+                        r += dr;
+                        c += dc;
+                    }
+                }
+            }
+
+            draw() {
+                // Clear canvas
+                this.ctx.fillStyle = '#0a5f0a';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw grid
+                this.ctx.strokeStyle = '#000';
+                this.ctx.lineWidth = 1;
+                for (let i = 0; i <= this.boardSize; i++) {
+                    // Vertical lines
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(i * this.cellSize, 0);
+                    this.ctx.lineTo(i * this.cellSize, this.canvas.height);
+                    this.ctx.stroke();
+
+                    // Horizontal lines
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, i * this.cellSize);
+                    this.ctx.lineTo(this.canvas.width, i * this.cellSize);
+                    this.ctx.stroke();
+                }
+
+                // Draw pieces
+                for (let row = 0; row < this.boardSize; row++) {
+                    for (let col = 0; col < this.boardSize; col++) {
+                        const piece = this.board[row][col];
+                        if (piece !== this.EMPTY) {
+                            const x = col * this.cellSize + this.cellSize / 2;
+                            const y = row * this.cellSize + this.cellSize / 2;
+                            const radius = this.cellSize * 0.4;
+
+                            this.ctx.beginPath();
+                            this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
+
+                            if (piece === this.BLACK) {
+                                this.ctx.fillStyle = '#000';
+                            } else {
+                                this.ctx.fillStyle = '#fff';
+                            }
+                            this.ctx.fill();
+
+                            // Add border
+                            this.ctx.strokeStyle = '#000';
+                            this.ctx.lineWidth = 2;
+                            this.ctx.stroke();
+                        }
+                    }
+                }
+
+                // Draw hints
+                if (this.showHints && !this.gameOver) {
+                    this.ctx.fillStyle = 'rgba(255, 255, 0, 0.3)';
+                    for (let row = 0; row < this.boardSize; row++) {
+                        for (let col = 0; col < this.boardSize; col++) {
+                            if (this.isValidMove(row, col, this.currentPlayer)) {
+                                this.ctx.fillRect(
+                                    col * this.cellSize + 2,
+                                    row * this.cellSize + 2,
+                                    this.cellSize - 4,
+                                    this.cellSize - 4
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            updateDisplay() {
+                this.draw();
+
+                const blackCount = [].concat(...this.board).filter(cell => cell === this.BLACK).length;
+                const whiteCount = [].concat(...this.board).filter(cell => cell === this.WHITE).length;
+
+                let statusText = `Black: ${blackCount} | White: ${whiteCount}`;
+
+                if (this.gameOver) {
+                    const winner = blackCount > whiteCount ? 'Black' : whiteCount > blackCount ? 'White' : 'Draw';
+                    statusText += ` | Game Over - ${winner} wins!`;
+                } else if (this.isComputerTurn) {
+                    statusText += ` | Computer is thinking...`;
+                } else {
+                    const playerName = this.currentPlayer === this.BLACK ? 'Black' : 'White';
+                    const playerType = this.shouldComputerMove() ? 'Computer' : 'Human';
+                    statusText += ` | ${playerType} ${playerName}'s turn`;
+                }
+
+                document.getElementById('status').textContent = statusText;
+            }
+        }
+
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new WebReversi('gameCanvas');
+        });
+    </script>
+</body>
+</html>

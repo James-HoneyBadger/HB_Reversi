@@ -14,7 +14,7 @@ A feature-rich, professionally-crafted implementation of the classic Reversi (Ot
 
 ### 🎨 Customization
 - **5 Beautiful Themes** - Classic, Ocean, Sunset, Midnight, Forest
-- **Traditional Checker Pieces** - Authentic disc rendering with smooth animations
+- **6 Piece Styles** - Traditional, Modern, Minimal, Glass, Neon, Emoji
 - **Sound Effects** - Satisfying audio feedback (toggleable)
 - **Responsive UI** - Clean, modern interface with hover effects
 
@@ -62,6 +62,33 @@ A feature-rich, professionally-crafted implementation of the classic Reversi (Ot
 python3 main.py
 ```
 
+## 🌐 Alternative Versions
+
+### Web Browser Version
+A simplified web-based version that runs directly in any modern browser:
+
+**Location:** `web_version/index.html`  
+**Features:** Basic Reversi gameplay, move hints, **three game modes** (Human vs Human, Human vs Computer, Computer vs Computer), **AI opponent** with difficulty levels  
+**Requirements:** Any modern web browser (Chrome, Firefox, Safari, Edge)  
+**Advantages:** No installation, works on mobile devices, cross-platform, includes AI gameplay  
+
+```bash
+# Run locally
+cd web_version
+python -m http.server 8000
+# Then open http://localhost:8000 in your browser
+```
+
+### Windows 2000 Version
+**Status:** Not implemented due to technical infeasibility  
+
+**Challenges:**
+- Windows 2000 end-of-life (2010) with no modern Python/Pygame support
+- Security and compatibility issues with ancient toolchains
+- Limited hardware capabilities
+
+**Recommendation:** Use the web version for legacy system compatibility.
+
 ## 📁 Project Structure
 
 ```
@@ -92,11 +119,9 @@ Iago_Deluxe/
 │   ├── README.md           # Documentation index
 │   ├── DEVELOPMENT.md      # Architecture and technical details
 │   ├── QUICK_REFERENCE.md  # Command reference and shortcuts
-│   ├── IMPLEMENTATION_SUMMARY.md  # Feature implementation notes
-│   ├── IMPROVEMENTS.md     # Enhancement history
-│   ├── ENHANCEMENTS.md     # Detailed feature descriptions
+│   ├── CHANGELOG.md        # Version history and changes
 │   ├── AI_LEVELS_VERIFICATION.md  # AI testing methodology
-│   └── MENU_IMPROVEMENTS.txt      # UI enhancement notes
+│   └── USER_GUIDE.md       # Comprehensive user manual
 │
 ├── assets/                  # Game assets
 │   └── reversi-icon.png    # Application icon

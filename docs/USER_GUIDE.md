@@ -1,53 +1,259 @@
-# Iago_Deluxe - User Guide
+# Iago Deluxe - User Guide
 
-**Version:** 2.0.0  
-**Last Updated:** November 19, 2025
+Welcome to Iago Deluxe! This comprehensive guide will help you get the most out of your Reversi/Othello gaming experience.
 
-Welcome to Iago_Deluxe! This comprehensive guide will help you get the most out of your Iago/Othello gaming experience.
-
-## 📋 Table of Contents
-
-- [Getting Started](#getting-started)
-- [Game Rules](#game-rules)
-- [Playing the Game](#playing-the-game)
-- [Strategy Guide](#strategy-guide)
-- [Features & Settings](#features--settings)
-- [Keyboard Shortcuts](#keyboard-shortcuts)
-- [Troubleshooting](#troubleshooting)
-- [FAQ](#faq)
-
-## Getting Started
+## 🎮 Getting Started
 
 ### Installation
 
-**Quick Install:**
-```bash
-git clone https://github.com/James-HoneyBadger/Iago_Deluxe.git
-cd Iago_Deluxe
-./setup.sh
+1. **Download and Setup**:
+   ```bash
+   git clone https://github.com/James-HoneyBadger/Iago_Deluxe.git
+   cd Iago_Deluxe
+   ./setup.sh
+   ```
+
+2. **Launch the Game**:
+   ```bash
+   ./play.sh
+   ```
+
+### First Game
+
+1. **Choose Your Opponent**: Select AI difficulty (1-6) or play against another human
+2. **Board Size**: Start with 8x8 (standard) or try smaller/larger boards
+3. **Make Your Move**: Click on any highlighted square to place your piece
+4. **Strategy**: Focus on corners and edges for the best positions
+
+## 🎯 Gameplay Basics
+
+### Rules of Reversi/Othello
+
+- **Objective**: Have more pieces on the board than your opponent when the game ends
+- **Turns**: Players alternate placing pieces on the board
+- **Capturing**: Place a piece to "sandwich" opponent pieces between your pieces
+- **Flipping**: Captured pieces flip to your color
+- **Legal Moves**: Any move that captures at least one opponent piece
+- **Game End**: No legal moves available for either player
+
+### Board Positions
+
+- **Corners**: Most valuable - can't be flipped once captured
+- **Edges**: Second best - harder to flip than center squares
+- **Center**: Flexible but vulnerable to attacks
+- **Avoid**: Squares adjacent to corners (gives opponent corner access)
+
+## 🎨 Customization
+
+### Visual Themes
+
+Choose from 5 beautiful themes via **View → Theme**:
+- **Classic**: Traditional Reversi appearance
+- **Ocean**: Cool blue color scheme
+- **Sunset**: Warm orange and pink tones
+- **Midnight**: Dark theme for low-light gaming
+- **Forest**: Natural green color palette
+
+### Piece Styles
+
+Select from 6 different piece styles via **View → Piece Style**:
+- **Traditional**: Authentic checker pieces with detailed patterns
+- **Modern**: Clean, flat design with subtle gradients
+- **Minimal**: Simple solid colors with thin borders
+- **Glass**: Translucent pieces with light reflections
+- **Neon**: Glowing pieces with bright outer auras
+- **Emoji**: Text-based emoji pieces (⚫/⚪)
+
+### Interface Options
+
+- **Grid Lines**: Toggle via **View → Show Grid**
+- **Move Preview**: See legal moves via **View → Move Preview**
+- **Sound Effects**: Enable/disable via **View → Sound Effects**
+- **Font Size**: Adjust text size via **View → Font Size**
+
+## 🤖 AI Opponent
+
+### Difficulty Levels
+
+Choose your challenge level via **AI → AI Difficulty**:
+
+1. **Level 1 - Beginner**: Makes obvious mistakes, great for learning
+2. **Level 2 - Easy**: Basic strategy, still beatable
+3. **Level 3 - Medium**: Solid play, requires thought
+4. **Level 4 - Hard**: Strong positional play
+5. **Level 5 - Expert**: Advanced tactics and endgame
+6. **Level 6 - Master**: Near-optimal play, very challenging
+
+### AI Settings
+
+- **Black Player**: Choose Human or AI via **AI → Black Player**
+- **White Player**: Choose Human or AI via **AI → White Player**
+- **AI Speed**: Adjust thinking time via **AI → AI Difficulty**
+
+## 📊 Analysis & Learning
+
+### Move Analysis
+
+Get real-time feedback on your moves:
+- **Enable**: **View → Show Hints** or press `I`
+- **Analysis Window**: Click a piece or press `V` to analyze any move
+- **Quality Ratings**: See if moves are Excellent, Good, Fair, or Poor
+
+### Post-Game Analysis
+
+After each game, access detailed analysis via **Help → Game Analysis**:
+- **Performance Summary**: Overall game statistics
+- **Move-by-Move Breakdown**: Quality assessment of each move
+- **Strategic Insights**: Corner control, mobility, and positioning
+- **Improvement Suggestions**: Tips for better play
+
+### Tutorial System
+
+Learn Reversi strategy with the built-in tutorial:
+- **Start Tutorial**: **Help → Strategy Tutorial**
+- **Navigation**: Press `T` for next tip, `ESC` to exit
+- **Topics Covered**:
+  - Corner strategy (most important)
+  - Edge control
+  - Avoiding dangerous squares
+  - Mobility concepts
+  - Endgame techniques
+
+## ⌨️ Controls & Shortcuts
+
+### Game Control
+| Key | Action |
+|-----|--------|
+| `N` | New game |
+| `S` | Save current game |
+| `L` | Load saved game |
+| `Q` | Quit game |
+| `ESC` | Close current screen/menu |
+
+### Move Navigation
+| Key | Action |
+|-----|--------|
+| `U` | Undo last move |
+| `R` | Redo undone move |
+| `H` | Toggle move hints |
+| `V` | Toggle move analysis window |
+
+### AI & Analysis
+| Key | Action |
+|-----|--------|
+| `A` | Cycle AI difficulty |
+| `D` | Change AI depth |
+| `I` | Toggle hint system |
+
+### Replay Mode
+| Key | Action |
+|-----|--------|
+| `P` | Enter/exit replay mode |
+| `◀/▶` | Step backward/forward |
+| `SPACE` | Play/pause auto-replay |
+| `HOME/END` | Jump to start/end |
+
+## 💾 Saving & Loading
+
+### Save Formats
+
+- **PGN Format**: Standard chess notation adapted for Reversi
+- **JSON Format**: Detailed game state with metadata
+
+### File Locations
+
+```
+config/iago-settings.json    # Your preferences
+data/iago_game_*.pgn        # Saved games (PGN)
+data/iago_game_*.json       # Saved games (JSON)
+iago.log                    # Game logs
 ```
 
-**Manual Install:**
-```bash
-# Create virtual environment
-python3 -m venv .venv
+### Save/Load Commands
 
-# Activate it
-source .venv/bin/activate  # Linux/macOS
-.venv\Scripts\activate     # Windows
+- **Save**: **Game → Save Game** or press `S`
+- **Load**: **Game → Load Game** or press `L`
+- **Export**: **Game → Export PGN/JSON** for sharing
 
-# Install dependencies
-pip install -r requirements.txt
-```
+## 🏆 Advanced Features
 
-### First Launch
+### Replay Mode
 
-**Recommended (using launcher):**
-```bash
-./play.sh
-```
+Review your games with full control:
+- **Enter**: **Help → Replay Mode** or press `P`
+- **Navigate**: Use timeline slider or arrow keys
+- **Analysis**: Move analysis works during replay
+- **Exit**: Press `ESC` to return to current game
 
-**Alternative methods:**
+### Board Sizes
+
+Experiment with different board dimensions:
+- **4x4**: Quick games, strategy essentials
+- **6x6**: Balanced challenge
+- **8x8**: Standard Reversi/Othello
+- **10x10+**: Complex positional play
+
+### Statistics Tracking
+
+Track your progress across gaming sessions:
+- **Win/Loss Records**: Per difficulty level
+- **Average Game Length**: Time and move statistics
+- **Performance Trends**: Improvement over time
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Game won't start:**
+- Ensure Python 3.7+ is installed
+- Run `./setup.sh` to install dependencies
+- Check that pygame is properly installed
+
+**Slow performance:**
+- Lower AI difficulty level
+- Disable move hints and analysis
+- Close other applications
+
+**Settings not saving:**
+- Check write permissions in project directory
+- Ensure `config/` directory exists
+
+**Audio not working:**
+- Check system audio settings
+- Toggle sound effects in game menu
+
+### Getting Help
+
+- **In-Game Help**: Press `T` for tutorial, `H` for hints
+- **Documentation**: Check `docs/` folder for detailed guides
+- **Logs**: Check `iago.log` for technical issues
+
+## 🎮 Tips & Strategies
+
+### Beginner Tips
+
+1. **Control the Corners**: Always take corners when available
+2. **Avoid Danger Squares**: Don't play next to empty corners
+3. **Maintain Mobility**: Keep multiple move options open
+4. **Count Carefully**: Every piece matters in the endgame
+
+### Advanced Strategies
+
+1. **Positional Play**: Some squares are worth more than others
+2. **Tempo Control**: Balance aggression with defense
+3. **Endgame Precision**: Perfect play in final moves is crucial
+4. **Pattern Recognition**: Learn common opening sequences
+
+### Learning Resources
+
+- **Built-in Tutorial**: Comprehensive strategy guide
+- **Move Analysis**: Real-time feedback on your play
+- **Post-Game Review**: Detailed analysis after each game
+- **AI Study**: Play against different difficulty levels
+
+---
+
+Enjoy Iago Deluxe! The more you play, the better you'll understand the strategic depth of Reversi/Othello.
 ```bash
 # Direct execution
 .venv/bin/python3 main.py

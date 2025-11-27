@@ -64,7 +64,6 @@ iago.log                  # Game logs (auto-rotated at 10MB)
 ### Analysis & Help
 | Key | Action |
 |-----|--------|
-| `G` | Show game analysis (post-game) |
 | `V` | Toggle move analysis window |
 | `T` | Open tutorial |
 | `F1` | Help screen |
@@ -193,7 +192,7 @@ After each game, view:
 - Mobility advantage
 - Strategic insights
 
-Access via: Press `G` after game ends
+Access via: Help → Game Analysis (after game ends)
 
 ## 💾 Save & Load
 

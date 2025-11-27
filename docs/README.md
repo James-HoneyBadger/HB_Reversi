@@ -13,13 +13,11 @@ Welcome to the comprehensive documentation for Iago_Deluxe, a feature-rich imple
 - **[CONTRIBUTING.md](../CONTRIBUTING.md)** - Contribution guidelines and code standards
 
 ### Implementation Details
-- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Feature implementation overview
-- **[IMPROVEMENTS.md](IMPROVEMENTS.md)** - Enhancement history and changelog
-- **[ENHANCEMENTS.md](ENHANCEMENTS.md)** - Detailed feature descriptions
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and feature changes
+- **[USER_GUIDE.md](USER_GUIDE.md)** - Comprehensive user manual
 
 ### Testing & Verification
 - **[AI_LEVELS_VERIFICATION.md](AI_LEVELS_VERIFICATION.md)** - AI difficulty testing methodology
-- **[MENU_IMPROVEMENTS.txt](MENU_IMPROVEMENTS.txt)** - UI enhancement notes
 
 ## 🎯 Quick Navigation
 
