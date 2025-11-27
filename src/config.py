@@ -3,6 +3,7 @@
 Configuration module for Reversi Deluxe
 Centralized configuration for easier modification and maintenance
 """
+# pylint: disable=invalid-name
 from dataclasses import dataclass
 from typing import Dict, Tuple
 

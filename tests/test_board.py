@@ -7,10 +7,15 @@ import sys
 import os
 import unittest
 
+from src.Iago import (
+    Board,
+    EMPTY,
+    BLACK,
+    WHITE,
+)  # noqa: E402
+
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from src.Iago import Board, EMPTY, BLACK, WHITE  # noqa: E402, F401
 
 
 class TestBoardInitialization(unittest.TestCase):
@@ -330,7 +335,7 @@ class TestPass(unittest.TestCase):
         self.assertEqual(len(board.move_list), 1)
 
         # Pass is recorded as (-1, -1)
-        color, r, c = board.move_list[0]
+        _color, r, c = board.move_list[0]
         self.assertEqual(r, -1)
         self.assertEqual(c, -1)
 

@@ -26,7 +26,7 @@ This document summarizes the reorganization of the Iago_Deluxe project structure
 ## File Changes
 
 ### Code Updates
-1. **`src/Reversi.py`**
+1. **`src/Iago.py`**
    - Updated `SETTINGS_FILE` path: `assets/reversi-settings.json` → `config/reversi-settings.json`
    - Updated save paths: `assets/iago_game_*.pgn` → `data/iago_game_*.pgn`
    - Updated save paths: `assets/iago_game_*.json` → `data/iago_game_*.json`
@@ -136,7 +136,7 @@ Iago_Deluxe/
 │   └── reversi-icon.png          # App icon
 │
 ├── src/
-│   ├── Reversi.py                # Main game
+│   ├── Iago.py                # Main game
 │   ├── config.py                 # Configuration
 │   ├── logger.py                 # Logging
 │   └── error_handling.py         # Error handling

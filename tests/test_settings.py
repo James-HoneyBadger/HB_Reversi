@@ -9,10 +9,10 @@ import unittest
 import json
 import tempfile
 
+from src.Iago import Settings, Board
+
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from src.Iago import Settings, Board  # noqa: E402
 
 
 class TestSettingsSaveLoad(unittest.TestCase):
@@ -57,11 +57,11 @@ class TestSettingsSaveLoad(unittest.TestCase):
             "board_size": settings.board_size,
         }
 
-        with open(self.temp_path, "w") as f:
+        with open(self.temp_path, "w", encoding="utf-8") as f:
             json.dump(data, f)
 
         # Load back
-        with open(self.temp_path, "r") as f:
+        with open(self.temp_path, "r", encoding="utf-8") as f:
             loaded = json.load(f)
 
         self.assertEqual(loaded["theme"], "midnight")
@@ -70,7 +70,7 @@ class TestSettingsSaveLoad(unittest.TestCase):
     def test_load_corrupted_settings(self):
         """Test loading corrupted settings file"""
         # Write invalid JSON
-        with open(self.temp_path, "w") as f:
+        with open(self.temp_path, "w", encoding="utf-8") as f:
             f.write("{ invalid json }")
 
         # Should handle gracefully (would use defaults)
@@ -99,11 +99,11 @@ class TestBoardSerialization(unittest.TestCase):
         board = Board(size=8)
         data = board.serialize()
 
-        with open(self.temp_path, "w") as f:
+        with open(self.temp_path, "w", encoding="utf-8") as f:
             json.dump(data, f)
 
         # Verify file exists and is valid JSON
-        with open(self.temp_path, "r") as f:
+        with open(self.temp_path, "r", encoding="utf-8") as f:
             loaded = json.load(f)
 
         self.assertEqual(loaded["size"], 8)
@@ -121,11 +121,11 @@ class TestBoardSerialization(unittest.TestCase):
 
         # Save
         data = board.serialize()
-        with open(self.temp_path, "w") as f:
+        with open(self.temp_path, "w", encoding="utf-8") as f:
             json.dump(data, f)
 
         # Load
-        with open(self.temp_path, "r") as f:
+        with open(self.temp_path, "r", encoding="utf-8") as f:
             loaded_data = json.load(f)
 
         loaded_board = Board.deserialize(loaded_data)
@@ -151,11 +151,11 @@ class TestBoardSerialization(unittest.TestCase):
     def test_load_invalid_file(self):
         """Test loading invalid save file"""
         # Write invalid data
-        with open(self.temp_path, "w") as f:
+        with open(self.temp_path, "w", encoding="utf-8") as f:
             json.dump({"invalid": "data"}, f)
 
         # Should handle gracefully
-        with open(self.temp_path, "r") as f:
+        with open(self.temp_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
         # Missing required fields
@@ -172,7 +172,7 @@ class TestFileErrorHandling(unittest.TestCase):
 
         # Should not crash
         try:
-            with open(nonexistent, "r") as f:
+            with open(nonexistent, "r", encoding="utf-8") as f:
                 json.load(f)
         except FileNotFoundError:
             # Expected
@@ -182,7 +182,7 @@ class TestFileErrorHandling(unittest.TestCase):
         """Test saving to read-only location"""
         # This would typically fail with PermissionError
         # Just verify we handle it
-        pass
+        # pass  # Removed unnecessary pass
 
     def test_corrupted_json(self):
         """Test loading corrupted JSON"""
@@ -191,7 +191,7 @@ class TestFileErrorHandling(unittest.TestCase):
         temp_file.close()
 
         try:
-            with open(temp_file.name, "r") as f:
+            with open(temp_file.name, "r", encoding="utf-8") as f:
                 json.load(f)
         except json.JSONDecodeError:
             # Expected

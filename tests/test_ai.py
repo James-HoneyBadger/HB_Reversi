@@ -5,12 +5,13 @@ Tests AI move selection, evaluation, and difficulty levels
 """
 import sys
 import os
+import time
 import unittest
+
+from src.Iago import Board, AI, BLACK, WHITE
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from src.Iago import Board, AI, BLACK, WHITE  # noqa: E402
 
 
 class TestAIInitialization(unittest.TestCase):
@@ -149,7 +150,6 @@ class TestAIDepthLevels(unittest.TestCase):
 
     def test_depth_1_fast(self):
         """Test that depth 1 AI is fast"""
-        import time
 
         board = Board(size=8)
         ai = AI(max_depth=1)

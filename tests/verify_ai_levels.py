@@ -4,11 +4,16 @@ Detailed AI Level Verification Report
 Tests all 6 difficulty levels with multiple scenarios
 """
 import sys
+import time
 
 sys.path.insert(0, "/home/james/Iago_Deluxe")
 
-from src.Iago import AI, Board, BLACK, WHITE
-import time
+# pylint: disable=wrong-import-position
+from src.Iago import (  # noqa: E402
+    AI,
+    Board,
+    BLACK,
+)
 
 
 def test_level_performance(level, num_tests=3):
@@ -22,7 +27,7 @@ def test_level_performance(level, num_tests=3):
     for _ in range(num_tests):
         ai.nodes_searched = 0
         start = time.time()
-        move = ai.choose(board, BLACK)
+        _ = ai.choose(board, BLACK)
         elapsed = time.time() - start
 
         total_nodes += ai.nodes_searched
@@ -40,6 +45,7 @@ def test_level_performance(level, num_tests=3):
 
 
 def main():
+    """Main function to run AI level verification tests"""
     print("=" * 70)
     print("IAGO AI DIFFICULTY LEVEL VERIFICATION")
     print("=" * 70)

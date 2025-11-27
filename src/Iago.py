@@ -27,14 +27,14 @@ Dependencies:
     pip install Pillow
 
 Usage:
-    python3 reversi.py [board_size]
+    python3 Iago.py [board_size]
 
 Examples:
-    python3 reversi.py      # Uses saved board size (default 8x8)
-    python3 reversi.py 6    # 6x6 board
-    python3 reversi.py 8    # Standard 8x8 board
-    python3 reversi.py 10   # 10x10 board
-    python3 reversi.py 16   # Large 16x16 board
+    python3 Iago.py      # Uses saved board size (default 8x8)
+    python3 Iago.py 6    # 6x6 board
+    python3 Iago.py 8    # Standard 8x8 board
+    python3 Iago.py 10   # 10x10 board
+    python3 Iago.py 16   # Large 16x16 board
 
 Board Size Options: 4x4, 6x6, 8x8, 10x10, 12x12, 14x14, 16x16
 Change board size in-game via Game menu → Board Size option
@@ -42,6 +42,8 @@ Change board size in-game via Game menu → Board Size option
 Author: Enhanced and refactored for maintainability
 Version: 2.0 - Refactored Edition
 """
+# pylint: disable=invalid-name,too-many-lines
+# pylint: disable=missing-function-docstring,missing-class-docstring
 from __future__ import annotations
 import json
 import math
@@ -54,6 +56,7 @@ from dataclasses import dataclass, field
 from typing import Callable, List, Optional, Tuple, Dict
 
 import pygame as pg
+from src.logger import get_logger
 
 # pylint: disable=no-member
 
@@ -87,6 +90,10 @@ class Board:
         default_factory=list
     )  # (color,r,c) pass=>(-1,-1)
 
+    # Bitboard representation for performance
+    black_bits: int = 0
+    white_bits: int = 0
+
     def __post_init__(self):
         if not self.grid:
             self.grid = [[EMPTY for _ in range(self.size)] for _ in range(self.size)]
@@ -95,6 +102,28 @@ class Board:
             self.grid[m][m] = WHITE
             self.grid[m - 1][m] = BLACK
             self.grid[m][m - 1] = BLACK
+
+        # Initialize bitboards from grid
+        self._update_bitboards()
+
+    def _update_bitboards(self):
+        """Update bitboard representation from grid"""
+        self.black_bits = 0
+        self.white_bits = 0
+        for r in range(self.size):
+            for c in range(self.size):
+                if self.grid[r][c] == BLACK:
+                    self.black_bits |= 1 << (r * self.size + c)
+                elif self.grid[r][c] == WHITE:
+                    self.white_bits |= 1 << (r * self.size + c)
+
+    def _bit_to_pos(self, bit: int) -> Tuple[int, int]:
+        """Convert bit position to (row, col)"""
+        return bit // self.size, bit % self.size
+
+    def _pos_to_bit(self, r: int, c: int) -> int:
+        """Convert (row, col) to bit position"""
+        return r * self.size + c
 
     def copy_grid(self):
         """Return a deep copy of the grid."""
@@ -134,6 +163,63 @@ class Board:
                     out.append(Move(r, c, flips))
         return out
 
+    def legal_moves_bitboard(self, color: Optional[int] = None) -> List[Move]:
+        """Get all legal moves using bitboard operations for better performance.
+
+        Args:
+            color: The player color (BLACK or WHITE). Defaults to current player.
+
+        Returns:
+            List of Move objects representing valid moves.
+        """
+        color = color or self.to_move
+        opp = OPP[color]
+
+        # Get bitboards
+        my_bits = self.black_bits if color == BLACK else self.white_bits
+        opp_bits = self.white_bits if color == BLACK else self.black_bits
+        empty_bits = ~(my_bits | opp_bits) & ((1 << (self.size * self.size)) - 1)
+
+        moves = []
+
+        # Check each empty square
+        while empty_bits:
+            # Find next empty square
+            bit_pos = empty_bits & -empty_bits  # Get lowest set bit
+            empty_bits &= empty_bits - 1  # Clear lowest set bit
+
+            r, c = self._bit_to_pos(bit_pos.bit_length() - 1)
+
+            # Check each direction for captures
+            flips = []
+            for dr, dc in DIRS:
+                rr, cc = r + dr, c + dc
+                line_flips = []
+
+                # Move in direction while finding opponent pieces
+                while (
+                    0 <= rr < self.size
+                    and 0 <= cc < self.size
+                    and self.grid[rr][cc] == opp
+                ):
+                    line_flips.append((rr, cc))
+                    rr += dr
+                    cc += dc
+
+                # Check if line ends with our piece
+                if (
+                    line_flips
+                    and 0 <= rr < self.size
+                    and 0 <= cc < self.size
+                    and self.grid[rr][cc] == color
+                ):
+                    flips.extend(line_flips)
+
+            if flips:
+                moves.append(Move(r, c, flips))
+
+        return moves
+
     def make_move(self, mv: Move):
         self.history.append((self.copy_grid(), self.to_move))
         self.redo_stack.clear()
@@ -143,6 +229,7 @@ class Board:
             self.grid[rr][cc] = self.to_move
         self.move_list.append((self.to_move, r, c))
         self.to_move = OPP[self.to_move]
+        self._update_bitboards()
 
     def pass_turn(self):
         self.history.append((self.copy_grid(), self.to_move))
@@ -159,6 +246,7 @@ class Board:
         self.to_move = tomove
         if self.move_list:
             self.move_list.pop()
+        self._update_bitboards()
         return True
 
     def redo(self):
@@ -168,6 +256,7 @@ class Board:
         grid, tomove = self.redo_stack.pop()
         self.grid = [row[:] for row in grid]
         self.to_move = tomove
+        self._update_bitboards()
         return True
 
     def score(self):
@@ -261,6 +350,35 @@ class AI:
         self.rng = rng or random.Random()
         self.transposition_table = {}
         self.nodes_searched = 0
+
+        # History heuristic: track how successful moves are at each depth
+        self.history_table = {}  # (depth, move_key) -> score
+
+        # Killer moves: best moves that caused cutoffs at each depth
+        self.killer_moves = {}  # depth -> [move1, move2]
+
+        # Zobrist hashing for transposition table
+        self.zobrist_table = self._init_zobrist()
+
+    def _init_zobrist(self) -> List[List[int]]:
+        """Initialize Zobrist keys for board positions"""
+        # For 8x8 board, we need keys for each position and each piece type
+        table = []
+        for _ in range(8 * 8 * 3):  # position * piece_type
+            table.append(random.randint(0, 2**64 - 1))
+        return table
+
+    def _zobrist_hash(self, board: Board) -> int:
+        """Compute Zobrist hash for board position"""
+        hash_val = 0
+        for r in range(board.size):
+            for c in range(board.size):
+                piece = board.grid[r][c]
+                if piece != EMPTY:
+                    pos = r * board.size + c
+                    piece_idx = piece  # 1 for BLACK, 2 for WHITE
+                    hash_val ^= self.zobrist_table[pos * 3 + piece_idx]
+        return hash_val
 
     def get_pst(self, board_size: int):
         """Get position-specific table for board size"""
@@ -423,8 +541,14 @@ class AI:
         # Enhanced move ordering for better pruning
         scored_moves = []
         for move in moves:
+            # Combine multiple ordering heuristics
             quick_score = self.quick_move_eval(board, move, color)
-            scored_moves.append((quick_score, move))
+            history_score = self._get_history_score(adaptive_depth, move, board.size)
+            killer_bonus = self._get_killer_bonus(adaptive_depth, move)
+
+            total_score = quick_score + history_score + killer_bonus
+            scored_moves.append((total_score, move))
+
         scored_moves.sort(key=lambda x: x[0], reverse=True)
 
         for _, move in scored_moves:
@@ -485,6 +609,50 @@ class AI:
                 return True
         return False
 
+    def _get_history_score(self, depth: int, move: Move, _board_size: int) -> int:
+        """Get history heuristic score for move ordering"""
+        move_key = (move.row, move.col)
+        return self.history_table.get((depth, move_key), 0)
+
+    def _get_killer_bonus(self, depth: int, move: Move) -> int:
+        """Get killer move bonus for move ordering"""
+        if depth not in self.killer_moves:
+            return 0
+
+        move_key = (move.row, move.col)
+        killers = self.killer_moves[depth]
+
+        if len(killers) >= 1 and move_key == (killers[0].row, killers[0].col):
+            return 1000  # First killer move gets big bonus
+        elif len(killers) >= 2 and move_key == (killers[1].row, killers[1].col):
+            return 500  # Second killer move gets smaller bonus
+
+        return 0
+
+    def _update_history(self, depth: int, move: Move, bonus: int):
+        """Update history heuristic table"""
+        move_key = (move.row, move.col)
+        key = (depth, move_key)
+        self.history_table[key] = self.history_table.get(key, 0) + bonus
+
+    def _update_killers(self, depth: int, move: Move):
+        """Update killer moves for this depth"""
+        if depth not in self.killer_moves:
+            self.killer_moves[depth] = []
+
+        killers = self.killer_moves[depth]
+
+        # Don't add duplicates
+        move_key = (move.row, move.col)
+        for killer in killers:
+            if (killer.row, killer.col) == move_key:
+                return
+
+        # Add new killer move, keep only top 2
+        killers.insert(0, move)
+        if len(killers) > 2:
+            killers.pop()
+
     def search(
         self, board: Board, depth: int, alpha: float, beta: float, color: int
     ) -> float:
@@ -495,10 +663,10 @@ class AI:
         if depth <= 0 or board.game_over():
             return self.evaluate(board, color)
 
-        # Transposition table lookup (use string representation as key)
-        board_key = str(board.serialize())
-        if board_key in self.transposition_table:
-            cached_depth, cached_score = self.transposition_table[board_key]
+        # Transposition table lookup using Zobrist hash
+        board_hash = self._zobrist_hash(board)
+        if board_hash in self.transposition_table:
+            cached_depth, cached_score = self.transposition_table[board_hash]
             if cached_depth >= depth:
                 return cached_score
 
@@ -515,11 +683,17 @@ class AI:
             # Pass turn to opponent
             return -self.search(board, depth - 1, -beta, -alpha, OPP[color])
 
-        # Move ordering for better alpha-beta pruning
-        if depth > 2:  # Only sort for deeper searches to save time
-            scored_moves = [
-                (self.quick_move_eval(board, move, color), move) for move in moves
-            ]
+        # Enhanced move ordering combining multiple heuristics
+        if depth > 1:  # Sort moves for better alpha-beta pruning
+            scored_moves = []
+            for move in moves:
+                # Combine quick evaluation, history heuristic, and killer moves
+                quick_score = self.quick_move_eval(board, move, color)
+                history_score = self._get_history_score(depth, move, board.size)
+                killer_bonus = self._get_killer_bonus(depth, move)
+                total_score = quick_score + history_score + killer_bonus
+                scored_moves.append((total_score, move))
+
             scored_moves.sort(key=lambda x: x[0], reverse=True)
             moves = [move for _, move in scored_moves]
 
@@ -530,14 +704,18 @@ class AI:
             board_copy.make_move(move)
 
             value = -self.search(board_copy, depth - 1, -beta, -alpha, OPP[color])
-            best_value = max(best_value, value)
+            if value > best_value:
+                best_value = value
             alpha = max(alpha, value)
 
             if alpha >= beta:
+                # Beta cutoff - update history and killer moves
+                self._update_history(depth, move, depth * depth)  # Higher depth bonus
+                self._update_killers(depth, move)
                 break  # Alpha-beta pruning
 
-        # Cache result
-        self.transposition_table[board_key] = (depth, best_value)
+        # Cache result using Zobrist hash
+        self.transposition_table[board_hash] = (depth, best_value)
         return best_value
 
 
@@ -560,7 +738,7 @@ class Settings:
     stats: Optional[PlayerStats] = None
     # New visual settings
     show_grid: bool = True
-    piece_style: str = "traditional"  # traditional, modern, emoji
+    piece_style: str = "traditional"  # traditional, modern, minimal, glass, neon, emoji
     font_size_multiplier: float = 1.0  # 0.8 to 1.5
     zoom_level: float = 1.0  # 0.5 to 2.0
     board_rotation: int = 0  # 0, 90, 180, 270 degrees
@@ -1512,6 +1690,9 @@ class MenuSystem:
         piece_style_submenu = [
             MenuItem("Traditional", lambda: self.game.set_piece_style("traditional")),
             MenuItem("Modern", lambda: self.game.set_piece_style("modern")),
+            MenuItem("Minimal", lambda: self.game.set_piece_style("minimal")),
+            MenuItem("Glass", lambda: self.game.set_piece_style("glass")),
+            MenuItem("Neon", lambda: self.game.set_piece_style("neon")),
             MenuItem("Emoji", lambda: self.game.set_piece_style("emoji")),
         ]
 
@@ -1630,7 +1811,10 @@ class MenuSystem:
                         2,
                     )
 
-            text_color = theme["text"]
+            if theme["name"] == "midnight":
+                text_color = (200, 200, 200)
+            else:
+                text_color = theme["text"]
             text = self.font.render(menu.title, True, text_color)
             text_rect = text.get_rect(center=menu.rect.center)
             screen.blit(text, text_rect)
@@ -1802,7 +1986,6 @@ class MenuSystem:
 
     def handle_keyboard(self, key):
         """Handle keyboard navigation in menus"""
-        from src.logger import get_logger
 
         logger = get_logger(__name__)
 
@@ -1893,7 +2076,6 @@ class MenuSystem:
                     self.active_submenu_items = None
                     self.setup_menus()  # Refresh menu state
                 except (AttributeError, TypeError) as e:
-                    from src.logger import get_logger
 
                     logger = get_logger(__name__)
                     logger.error(f"Menu handler error: {e}")
@@ -2029,8 +2211,7 @@ class SelectionDialog:
 
         # Check if clicked inside dialog
         if not dialog_rect.collidepoint(pos):
-            self.hide()
-            return True
+            return False  # Don't close on click outside
 
         # Check option clicks
         y = dialog_y + 60
@@ -2434,9 +2615,7 @@ class GameAnalysisDisplay:
         screen.blit(title, (panel_x + 20, panel_y + 15))
 
         # Close hint
-        close_hint = self.small_font.render(
-            "Press 'G' or ESC to close", True, theme["text"]
-        )
+        close_hint = self.small_font.render("Press ESC to close", True, theme["text"])
         screen.blit(
             close_hint,
             (panel_x + panel_width - close_hint.get_width() - 20, panel_y + 15),
@@ -3080,8 +3259,8 @@ class Game:
             return
         try:
             # Simple generated icon
-            import PIL.Image
-            import PIL.ImageDraw
+            import PIL.Image  # pylint: disable=import-outside-toplevel
+            import PIL.ImageDraw  # pylint: disable=import-outside-toplevel
 
             img = PIL.Image.new("RGBA", (256, 256), (0, 0, 0, 0))
             d = PIL.ImageDraw.Draw(img)
@@ -3153,7 +3332,7 @@ class Game:
 
         # Draw analytics panel if active
         if self.ui.show_analytics:
-            w, h = self.screen.get_size()
+            w, _h = self.screen.get_size()
             analytics_rect = pg.Rect(w - 300, HUD_HEIGHT + 220, 290, 250)
             self.draw_analytics(analytics_rect, theme)
 
@@ -3559,6 +3738,71 @@ class Game:
                     )
                 # Clean outer ring
                 pg.draw.circle(surf, (180, 180, 180), (center_x, center_y), radius, 3)
+
+        elif style == "minimal":
+            # Minimal style - simple solid colors with thin border
+            if color == BLACK:
+                pg.draw.circle(surf, (20, 20, 20), (center_x, center_y), radius)
+                pg.draw.circle(surf, (0, 0, 0), (center_x, center_y), radius, 2)
+            else:
+                pg.draw.circle(surf, (240, 240, 240), (center_x, center_y), radius)
+                pg.draw.circle(surf, (180, 180, 180), (center_x, center_y), radius, 2)
+
+        elif style == "glass":
+            # Glass style - translucent with highlight and shadow effects
+            if color == BLACK:
+                # Semi-transparent black with highlight
+                for i in range(radius, 0, -1):
+                    alpha = 180 + int((radius - i) / radius * 75)  # Vary transparency
+                    glass_color = (0, 0, 0, alpha)
+                    pg.draw.circle(surf, glass_color, (center_x, center_y), i)
+                # Highlight reflection
+                highlight_color = (255, 255, 255, 120)
+                highlight_rect = (
+                    center_x - radius // 3,
+                    center_y - radius // 3,
+                    radius // 2,
+                    radius // 3,
+                )
+                pg.draw.ellipse(surf, highlight_color, highlight_rect)
+            else:
+                # Semi-transparent white with highlight
+                for i in range(radius, 0, -1):
+                    alpha = 180 + int((radius - i) / radius * 75)
+                    glass_color = (255, 255, 255, alpha)
+                    pg.draw.circle(surf, glass_color, (center_x, center_y), i)
+                # Highlight reflection
+                highlight_color = (255, 255, 255, 200)
+                highlight_rect = (
+                    center_x - radius // 3,
+                    center_y - radius // 3,
+                    radius // 2,
+                    radius // 3,
+                )
+                pg.draw.ellipse(surf, highlight_color, highlight_rect)
+
+        elif style == "neon":
+            # Neon style - glowing effect with bright colors
+            if color == BLACK:
+                # Dark base with bright neon blue glow
+                pg.draw.circle(surf, (0, 20, 40), (center_x, center_y), radius)
+                # Inner bright core
+                pg.draw.circle(surf, (0, 100, 200), (center_x, center_y), radius // 2)
+                # Bright outer glow
+                for glow in range(1, 4):
+                    glow_color = (0, 50 + glow * 30, 100 + glow * 40, 100 - glow * 20)
+                    glow_radius = radius + glow * 2
+                    pg.draw.circle(surf, glow_color, (center_x, center_y), glow_radius)
+            else:
+                # Dark base with bright neon pink glow
+                pg.draw.circle(surf, (40, 0, 20), (center_x, center_y), radius)
+                # Inner bright core
+                pg.draw.circle(surf, (200, 0, 100), (center_x, center_y), radius // 2)
+                # Bright outer glow
+                for glow in range(1, 4):
+                    glow_color = (100 + glow * 40, 0, 50 + glow * 30, 100 - glow * 20)
+                    glow_radius = radius + glow * 2
+                    pg.draw.circle(surf, glow_color, (center_x, center_y), glow_radius)
 
         else:  # traditional
             if color == BLACK:
@@ -4402,7 +4646,8 @@ class Game:
         """Show theme selection dialog"""
         # Define all available themes
         theme_options = [
-            (THEMES[theme_key]["display"], theme_key) for theme_key in THEMES
+            (theme_data["display"], theme_key)
+            for theme_key, theme_data in THEMES.items()
         ]
 
         def set_theme(theme_key):
@@ -4584,7 +4829,7 @@ class Game:
                 self.ui.status = "Game analysis closed"
             else:
                 self.game_analysis.show_analysis()
-                self.ui.status = "Game analysis shown - press G or ESC to close"
+                self.ui.status = "Game analysis shown - press ESC to close"
         else:
             self.ui.status = "Game analysis only available after game ends"
 
@@ -4907,14 +5152,13 @@ Comment=Classic Iago/Othello board game with AI
             if self.ui.replay_mode:
                 self.replay_mode.update()
 
-            # Check for game over state change to auto-show analysis
+            # Check for game over state change
             current_game_over = self.board.game_over()
             if current_game_over and not self.was_game_over:
-                # Game just ended - auto-show analysis
+                # Game just ended
                 if self.ui.game_start_time:
                     self.ui.game_end_time = time.time()
-                self.game_analysis.show_analysis()
-                self.ui.status = "Game over! Analysis shown - press G or ESC to close"
+                self.ui.status = "Game over! Use Help → Game Analysis to view results"
             self.was_game_over = current_game_over
 
             for ev in pg.event.get():
@@ -5026,12 +5270,6 @@ Comment=Classic Iago/Othello board game with AI
                     elif ev.key == pg.K_i:
                         # Toggle hint system
                         self.on_toggle_move_hints()
-                    elif ev.key == pg.K_g:
-                        if self.board.game_over():
-                            if self.game_analysis.active:
-                                self.game_analysis.hide_analysis()
-                            else:
-                                self.game_analysis.show_analysis()
                     elif ev.key == pg.K_v:
                         self.on_toggle_move_analysis()
                     elif ev.key == pg.K_t:
@@ -5102,7 +5340,7 @@ def main(argv: List[str] = None):  # pylint: disable=unused-argument
 
     # Setup logging if available
     try:
-        from src.logger import GameLogger
+        from src.logger import GameLogger  # pylint: disable=import-outside-toplevel
 
         GameLogger.setup_logging(debug=False)
         logger = GameLogger.get_logger(__name__)
@@ -5144,7 +5382,7 @@ def main(argv: List[str] = None):  # pylint: disable=unused-argument
         if logger:
             logger.error(f"Fatal error: {e}", exc_info=True)
         else:
-            import traceback
+            import traceback  # pylint: disable=import-outside-toplevel
 
             traceback.print_exc()
         return 1

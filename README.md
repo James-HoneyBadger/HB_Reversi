@@ -74,7 +74,7 @@ Iago_Deluxe/
 │
 ├── src/                     # Source code
 │   ├── __init__.py
-│   ├── Reversi.py          # Main game implementation (5000+ lines)
+│   ├── Iago.py             # Main game implementation (5000+ lines)
 │   ├── config.py           # Configuration constants and settings
 │   ├── logger.py           # Logging system with file rotation
 │   └── error_handling.py   # Custom exceptions and validation

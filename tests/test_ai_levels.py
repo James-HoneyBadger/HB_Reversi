@@ -4,9 +4,9 @@ Test script to verify AI difficulty levels 1-6 function differently
 """
 import sys
 
-sys.path.insert(0, "/home/james/Iago_Deluxe")
+from src.Iago import AI, Board, BLACK
 
-from src.Iago import AI, Board, BLACK, WHITE
+sys.path.insert(0, "/home/james/Iago_Deluxe")
 
 
 def test_ai_levels():
@@ -64,7 +64,8 @@ def test_ai_levels():
     for i in range(1, 6):
         if nodes[i] <= nodes[i - 1] * 0.5:  # Allow some variance
             print(
-                f"⚠️  Warning: Level {i+1} didn't search significantly more than Level {i}"
+                f"⚠️  Warning: Level {i+1} didn't search significantly "
+                f"more than Level {i}"
             )
             increasing = False
 

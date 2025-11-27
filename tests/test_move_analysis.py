@@ -4,6 +4,7 @@ Simple test to verify move analysis toggle functionality
 """
 import sys
 import os
+import importlib.util
 
 # Add the project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -14,8 +15,6 @@ def test_move_analysis_toggle():
     print("Testing move analysis toggle functionality...")
 
     # Import classes locally to avoid module execution
-    import importlib.util
-
     spec = importlib.util.spec_from_file_location(
         "iago", "/home/james/Iago_Deluxe/src/Iago.py"
     )
@@ -25,14 +24,14 @@ def test_move_analysis_toggle():
     iago_module.__name__ = "not_main"
     spec.loader.exec_module(iago_module)
 
-    Game = iago_module.Game
-    Board = reversi_module.Board
-    Settings = reversi_module.Settings
+    game_class = iago_module.Game
+    board_class = iago_module.Board
+    settings_class = iago_module.Settings
 
     # Create a game instance
-    board = Board()
-    settings = Settings()
-    game = Game(board, settings)
+    board = board_class()
+    settings = settings_class()
+    game = game_class(board, settings)
 
     # Initial state should be False
     assert not game.ui.show_move_analysis, "Initial state should be False"
